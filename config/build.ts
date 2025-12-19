@@ -5,7 +5,10 @@ import manifest from "../public/manifest.json";
 
 const outdir = "./build";
 
-const { content_scripts } = manifest;
+const {
+  content_scripts,
+  background: { service_worker },
+} = manifest;
 
 const scripts = content_scripts.flatMap((script) => script.js);
 
@@ -25,7 +28,11 @@ const ext = {
 
 await Bun.build({
   target: "browser",
-  entrypoints: resolveEntryPoints([...scripts, "popup/index.tsx"]),
+  entrypoints: resolveEntryPoints([
+    ...scripts,
+    service_worker,
+    "popup/index.tsx",
+  ]),
   outdir,
 });
 
@@ -45,6 +52,8 @@ for await (const filename of glob.scan(publicFolder)) {
   if (filename.endsWith(ext.html)) {
     const fileFolder = filename.replace(ext.html, "");
 
+    // create the directory if it doesn't exist
+    await $`mkdir -p ${outdir}/${fileFolder}`;
     // rename files to index.html since it's being copied into a folder that share its original name
     await $`cp ${file.name} ${outdir}/${fileFolder}/index.html`;
     // copy the css file into the folder
