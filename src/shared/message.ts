@@ -3,6 +3,9 @@ export interface Message {
 	sender: {
 		username: string;
 		color: string;
+		isMod: boolean;
+		isVip: boolean;
+		subscriberMonths: number | undefined;
 	};
 	sourceChannel: {
 		name: string;

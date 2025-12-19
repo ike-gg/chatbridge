@@ -15,9 +15,25 @@ export class WebSocketInjector {
 	}
 
 	injectTwitchMessage(message: Message) {
+		const badges = [];
+
+		if (message.sender.isMod) {
+			badges.push("moderator/1");
+		}
+
+		if (message.sender.isVip) {
+			badges.push("vip/1");
+		}
+
+		if (message.sender.subscriberMonths) {
+			badges.push(`subscriber/${message.sender.subscriberMonths}`);
+		}
+
+		const badgesString = badges.join(",");
+
 		const template = [
 			"@badge-info=",
-			"badges=",
+			`badges=${badgesString}`,
 			`client-nonce=${Math.random().toString(36).substring(2, 34)}`,
 			`color=${message.sender.color}`,
 			`display-name=${message.sender.username}`,
@@ -36,6 +52,24 @@ export class WebSocketInjector {
 	}
 
 	injectKickMessage(message: Message) {
+		const badges = [];
+
+		if (message.sender.isMod) {
+			badges.push({ type: "moderator", text: "Moderator" });
+		}
+
+		if (message.sender.isVip) {
+			badges.push({ type: "vip", text: "VIP" });
+		}
+
+		if (message.sender.subscriberMonths) {
+			badges.push({
+				type: "subscriber",
+				text: "Subscriber",
+				count: message.sender.subscriberMonths,
+			});
+		}
+
 		const payload = {
 			event: "App\\Events\\ChatMessageEvent",
 			data: JSON.stringify({
@@ -50,13 +84,7 @@ export class WebSocketInjector {
 					slug: message.sender.username.toLowerCase(),
 					identity: {
 						color: message.sender.color,
-						badges: [
-							{
-								type: "twitch",
-								text: "Twitch",
-								count: 1,
-							},
-						],
+						badges: badges,
 					},
 				},
 				metadata: {
