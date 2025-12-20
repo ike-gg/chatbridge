@@ -3,6 +3,7 @@ export interface Message {
 	sender: {
 		username: string;
 		color: string;
+		isBroadcaster: boolean;
 		isMod: boolean;
 		isVip: boolean;
 		subscriberMonths: number | undefined;

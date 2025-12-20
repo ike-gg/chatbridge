@@ -1,5 +1,9 @@
 import type { Message } from "src/shared/message";
 
+// Marker używany do identyfikacji naszych wiadomości (niewidoczny)
+// Zero Width Space + Zero Width Non-Joiner
+const MESSAGE_MARKER = "\u200B\u200C";
+
 export class WebSocketInjector {
 	private injectMessage(data: string, target: "twitch" | "kick") {
 		window.postMessage(
@@ -29,7 +33,14 @@ export class WebSocketInjector {
 			badges.push(`subscriber/${message.sender.subscriberMonths}`);
 		}
 
+		if (message.sender.isBroadcaster) {
+			badges.push("broadcaster/1");
+		}
+
 		const badgesString = badges.join(",");
+
+		// Dodajemy niewidoczny marker na końcu treści wiadomości
+		const markedContent = message.content + MESSAGE_MARKER;
 
 		const template = [
 			"@badge-info=",
@@ -45,14 +56,23 @@ export class WebSocketInjector {
 			"returning-chatter=0",
 			"subscriber=1",
 			"turbo=0",
-			`user-type= :KICK!${message.sender.username}@${message.sender.username}45.tmi.twitch.tv PRIVMSG #${message.displayChannel.name} : ${message.content}`,
+			`user-type= :${message.sender.username}!${message.sender.username}@${message.sender.username}45.tmi.twitch.tv PRIVMSG #${message.displayChannel.name} : ${markedContent}`,
 		];
 
 		this.injectMessage(template.join(";"), "twitch");
 	}
 
+	// Eksportujemy marker, żeby można było go używać w innych miejscach
+	static getMessageMarker(): string {
+		return MESSAGE_MARKER;
+	}
+
 	injectKickMessage(message: Message) {
 		const badges = [];
+
+		if (message.sender.isBroadcaster) {
+			badges.push({ type: "broadcaster", text: "Broadcaster" });
+		}
 
 		if (message.sender.isMod) {
 			badges.push({ type: "moderator", text: "Moderator" });
@@ -70,17 +90,20 @@ export class WebSocketInjector {
 			});
 		}
 
+		// Dodajemy niewidoczny marker na końcu treści wiadomości
+		const markedContent = message.content + MESSAGE_MARKER;
+
 		const payload = {
 			event: "App\\Events\\ChatMessageEvent",
 			data: JSON.stringify({
 				// id: crypto.randomUUID(),
 				chatroom_id: message.displayChannel.id,
-				content: message.content,
+				content: markedContent,
 				type: "message",
 				created_at: new Date().toISOString(),
 				sender: {
 					id: 1,
-					username: `${message.sender.username} (TWITCH)`,
+					username: `${message.sender.username}`,
 					slug: message.sender.username.toLowerCase(),
 					identity: {
 						color: message.sender.color,

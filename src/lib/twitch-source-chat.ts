@@ -75,6 +75,7 @@ export class TwitchSourceChat {
 
 			const isMod = badges.includes("moderator");
 			const isVip = badges.includes("vip");
+			const isBroadcaster = badges.includes("broadcaster");
 
 			const badgesArray = badges.split(",");
 
@@ -117,6 +118,7 @@ export class TwitchSourceChat {
 					subscriberMonths: subscriberBadge
 						? parseInt(subscriberBadge as string, 10)
 						: undefined,
+					isBroadcaster,
 				},
 				sourceChannel: {
 					name: this.sourceChannelName,
