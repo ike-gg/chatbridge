@@ -88,6 +88,10 @@ export class KickSourceChat {
 					(badge) => badge.type === "og",
 				);
 
+				const isBroadcaster = payload.sender.identity.badges.some(
+					(badge) => badge.type === "broadcaster",
+				);
+
 				const subscriberMonths =
 					payload.sender.identity.badges.find(
 						(badge) => badge.type === "subscriber",
@@ -101,6 +105,7 @@ export class KickSourceChat {
 						isMod,
 						isVip,
 						subscriberMonths,
+						isBroadcaster,
 					},
 					sourceChannel: {
 						id: this.channelId?.toString() ?? "",

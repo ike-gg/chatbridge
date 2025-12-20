@@ -59,7 +59,6 @@ const OriginalWebSocket = window.WebSocket;
 	url: string | URL,
 	protocols?: string | string[],
 ): WebSocket {
-	console.log("CREATING URL", url);
 	const ws = new OriginalWebSocket(url, protocols);
 
 	const urlString = typeof url === "string" ? url : url.toString();

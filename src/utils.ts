@@ -25,16 +25,10 @@ export const getCurrentTab = async () => {
 
 export const storage = {
 	set: async (key: string, value: unknown) => {
-		return chrome.storage.sync
-			.set({ [key]: value })
-			.then(() => value)
-			.catch(console.log);
+		return chrome.storage.sync.set({ [key]: value }).then(() => value);
 	},
 	get: async (key: string) => {
-		return chrome.storage.sync
-			.get(key)
-			.then((result) => result[key])
-			.catch(console.log);
+		return chrome.storage.sync.get(key).then((result) => result[key]);
 	},
 };
 

@@ -1,6 +1,8 @@
 import { KickSourceChat } from "src/lib/kick-source-chat";
 import { TwitchSourceChat } from "src/lib/twitch-source-chat";
 import { WebSocketInjector } from "src/lib/websocket-injector";
+import { KickMessageDetector } from "src/lib/kick-message-detector";
+import { TwitchMessageDetector } from "src/lib/twitch-message-detector";
 import { getChannelName, storage } from "src/utils";
 
 const HREF = window.location.href;
@@ -24,6 +26,9 @@ const WebsocketInjector = new WebSocketInjector();
 			KickChat.onMessage((message) => {
 				WebsocketInjector.injectTwitchMessage(message);
 			});
+
+			const detector = new TwitchMessageDetector();
+			detector.start();
 		}
 	}
 
@@ -43,6 +48,9 @@ const WebsocketInjector = new WebSocketInjector();
 			TwitchChat.onMessage((message) => {
 				WebsocketInjector.injectKickMessage(message);
 			});
+
+			const detector = new KickMessageDetector();
+			detector.start();
 		}
 	}
 })();
