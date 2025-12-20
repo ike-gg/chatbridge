@@ -1,7 +1,5 @@
 import type { Message } from "src/shared/message";
 
-// Marker używany do identyfikacji naszych wiadomości (niewidoczny)
-// Zero Width Space + Zero Width Non-Joiner
 const MESSAGE_MARKER = "\u200B\u200C";
 
 export class WebSocketInjector {
@@ -39,8 +37,7 @@ export class WebSocketInjector {
 
 		const badgesString = badges.join(",");
 
-		// Dodajemy niewidoczny marker na końcu treści wiadomości
-		const markedContent = message.content + MESSAGE_MARKER;
+		const markedContent = message.content + " " + MESSAGE_MARKER;
 
 		const template = [
 			"@badge-info=",
@@ -62,7 +59,6 @@ export class WebSocketInjector {
 		this.injectMessage(template.join(";"), "twitch");
 	}
 
-	// Eksportujemy marker, żeby można było go używać w innych miejscach
 	static getMessageMarker(): string {
 		return MESSAGE_MARKER;
 	}
@@ -90,8 +86,7 @@ export class WebSocketInjector {
 			});
 		}
 
-		// Dodajemy niewidoczny marker na końcu treści wiadomości
-		const markedContent = message.content + MESSAGE_MARKER;
+		const markedContent = message.content + " " + MESSAGE_MARKER;
 
 		const payload = {
 			event: "App\\Events\\ChatMessageEvent",
