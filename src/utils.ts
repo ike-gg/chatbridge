@@ -44,7 +44,15 @@ export const getChannelName = () => {
 	if (HREF.includes("twitch.tv")) {
 		const slugs = HREF.split("/");
 
-		const channelSlug = slugs.includes("popout") ? slugs.at(4) : slugs.at(3);
+		let channelSlug: string | undefined;
+
+		if (slugs.includes("popout")) {
+			channelSlug = slugs.at(4);
+		} else if (slugs.includes("embed")) {
+			channelSlug = slugs.at(4);
+		} else {
+			channelSlug = slugs.at(3);
+		}
 
 		return channelSlug;
 	}
